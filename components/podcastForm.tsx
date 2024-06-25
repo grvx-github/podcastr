@@ -30,6 +30,7 @@ import { v4 as uuidv4 } from "uuid"
 import { collection, addDoc } from "firebase/firestore"
 import { useToast } from "@/components/ui/use-toast"
 import GenerateThumbnail from "./generte-thumbnail"
+import cleanVoicePrompt from "@/lib/cleanVoicePrompt"
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
@@ -61,9 +62,12 @@ const PodcastForm: React.FC<{ session: any }> = ({ session }) => {
     const values = form.getValues()
     setIsGenerating(true)
 
+    // Clean the voicePrompt before generating the podcast
+    const cleanedVoicePrompt = cleanVoicePrompt(values.voicePrompt)
+
     const { audioBlob, audioUrl, error } = await handleGeneratePodcast(
       values.voiceType,
-      values.voicePrompt
+      cleanedVoicePrompt
     )
 
     if (error) {
