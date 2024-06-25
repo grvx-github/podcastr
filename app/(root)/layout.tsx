@@ -30,7 +30,7 @@ export default function RootLayout({
                 />
                 <MobileNav />
               </div>
-              <div className=" flex flex-col md:pb-14">
+              <div className=" flex flex-col md:pb-14 pb-8">
                 <Toaster />
                 {children}
               </div>
