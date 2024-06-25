@@ -9,7 +9,6 @@ export default async function CreatePodcast() {
 
   if (!session) {
     signIn("google") // Initiate sign-in with Google
-    return null // Return null to stop rendering
   }
 
   return (
