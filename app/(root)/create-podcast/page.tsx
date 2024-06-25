@@ -2,14 +2,13 @@
 import PodcastForm from "@/components/podcastForm"
 import { authConfig } from "@/lib/auth"
 import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation" // Import the redirect function
-
+import { signIn } from "next-auth/react" // Import the signIn function from next-auth/react
 
 export default async function CreatePodcast() {
   const session = await getServerSession(authConfig)
 
   if (!session) {
-    redirect("/sign-in") // Redirect to login if no session
+    signIn("google") // Initiate sign-in with Google
     return null // Return null to stop rendering
   }
 
