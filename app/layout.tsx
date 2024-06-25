@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Manrope } from "next/font/google"
 import "./globals.css"
 import AudioProvider from "@/providers/audioProvider"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const manrope = Manrope({ subsets: ["latin"] })
 
@@ -21,7 +22,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AudioProvider>
-        <body className={manrope.className}>{children}</body>
+        <body className={manrope.className}>
+          {children}
+          <SpeedInsights />
+        </body>
       </AudioProvider>
     </html>
   )
