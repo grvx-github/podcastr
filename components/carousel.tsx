@@ -43,7 +43,7 @@ const EmblaCarousel: React.FC<CarouselProps> = ({ fansLikeDetail }) => {
             src={item.imageUrl!}
             alt="card"
             fill
-            sizes="(max-width: 768px) 95vw, (max-width: 1200px) 14vw, 10vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 20vw, 12vw"
             className="absolute size-full rounded-xl border-none object-cover"
           />
           <div className="glassmorphism-black relative z-10 flex flex-col rounded-b-xl p-4">
