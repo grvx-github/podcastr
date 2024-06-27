@@ -10,6 +10,8 @@ import {
   getDoc,
   deleteDoc,
   limit,
+  updateDoc,
+  increment,
 } from "firebase/firestore"
 import { db, storage } from "../firebaseConfig"
 import { deleteObject, ref } from "firebase/storage"
@@ -299,4 +301,16 @@ export async function searchPodcasts(searchTerm: string): Promise<Podcast[]> {
     if (results.length > 0) return results
   }
   return []
+}
+
+
+export const incrementListenCount = async (podcastId: string) => {
+  try {
+    const podcastDoc = doc(db, "podcasts", podcastId)
+    await updateDoc(podcastDoc, {
+      views: increment(1),
+    })
+  } catch (error) {
+    console.error("Error updating listen count:", error)
+  }
 }

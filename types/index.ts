@@ -11,6 +11,12 @@ export interface EmptyStateProps {
   buttonLink?: string
 }
 
+export interface TopUser {
+  author: string
+  authorId: string
+  authorImageUrl: string
+  podcastCount: number
+}
 
 // Define the TopPodcastersProps interface to represent top podcasters
 export interface TopPodcastersProps {

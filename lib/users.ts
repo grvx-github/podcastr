@@ -1,16 +1,14 @@
 // /lib/users.ts
 
-import {
-  collection,
-  getDocs,
-  where,
-  query,
-} from "firebase/firestore"
+import { collection, getDocs, query, where } from "firebase/firestore"
 import { db } from "../firebaseConfig"
-import { Podcast, UserPodcasts } from "@/types"
+import { Podcast, TopUser } from "@/types"
 
-export async function getTopUsersByPodcastCount(): Promise<UserPodcasts[]> {
+
+
+export async function getTopUsersByPodcastCount(): Promise<TopUser[]> {
   try {
+    // Fetch the podcasts collection from Firestore
     const podcastsCollection = collection(db, "podcasts")
     const podcastSnapshot = await getDocs(podcastsCollection)
 
@@ -19,27 +17,40 @@ export async function getTopUsersByPodcastCount(): Promise<UserPodcasts[]> {
       return []
     }
 
-    // Aggregate podcasts by authorId
-    const userPodcastMap = new Map<string, Podcast[]>()
+    // Aggregate podcasts by authorId with the relevant fields
+    const userPodcastMap = new Map<
+      string,
+      { author: string; authorImageUrl: string; podcastCount: number }
+    >()
 
     podcastSnapshot.forEach((doc) => {
       const podcastData = doc.data() as Podcast
-      const { authorId } = podcastData
+      const { author, authorId, authorImageUrl } = podcastData
 
-      if (authorId) {
+      if (authorId && author && authorImageUrl) {
         if (!userPodcastMap.has(authorId)) {
-          userPodcastMap.set(authorId, [])
+          userPodcastMap.set(authorId, {
+            author,
+            authorImageUrl,
+            podcastCount: 0,
+          })
         }
-        userPodcastMap.get(authorId)!.push(podcastData)
+        // Increment the podcast count for the author
+        userPodcastMap.get(authorId)!.podcastCount += 1
       } else {
-        console.warn(`Document ${doc.id} is missing 'authorId' field.`)
+        console.warn(`Document ${doc.id} is missing required fields.`)
       }
     })
 
     // Convert the map to an array and sort by podcast count in descending order
-    const sortedUsers: UserPodcasts[] = Array.from(userPodcastMap.entries())
-      .map(([userId, podcasts]) => ({ userId, podcasts }))
-      .sort((a, b) => b.podcasts.length - a.podcasts.length)
+    const sortedUsers: TopUser[] = Array.from(userPodcastMap.entries())
+      .map(([authorId, { author, authorImageUrl, podcastCount }]) => ({
+        author,
+        authorId,
+        authorImageUrl,
+        podcastCount,
+      }))
+      .sort((a, b) => b.podcastCount - a.podcastCount)
 
     return sortedUsers
   } catch (error) {

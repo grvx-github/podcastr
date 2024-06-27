@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { useAudio } from "@/providers/audioProvider"
 
 import { Progress } from "./ui/progress"
+import { incrementListenCount } from "@/lib/podcasts"
 
 const PodcastPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -76,6 +77,10 @@ const PodcastPlayer = () => {
       if (audioElement) {
         audioElement.play().then(() => {
           setIsPlaying(true)
+          if (audio?.podcastId) {
+            // Update listen count when playback starts
+            incrementListenCount(audio.podcastId)
+          }
         })
       }
     } else {

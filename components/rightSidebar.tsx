@@ -1,4 +1,4 @@
-// File: components/RightSidebar.tsx
+// /components/RightSidebar.tsx
 
 import React, { useEffect, useState, useMemo, useCallback } from "react"
 import Link from "next/link"
@@ -7,19 +7,31 @@ import UserButton from "./userButton"
 import Image from "next/image"
 import Header from "./header"
 import Carousel from "./carousel"
-import { getTopUsersByPodcastCount } from "@/lib/users"
-import { UserPodcasts } from "@/types"
 import { useRouter } from "next/navigation"
+import { Podcast, TopUser } from "@/types"
+import { getTrendingPodcasts } from "@/lib/podcasts"
+import { getTopUsersByPodcastCount } from "@/lib/users"
 
 const RightSidebar: React.FC = () => {
   const router = useRouter()
   const { data: session, status } = useSession()
   const user = session?.user
 
+  // Updated state to store TopUser objects
+  const [trendingPodcasts, setTrendingPodcasts] = useState<{
+    loading: boolean
+    error: string | null
+    podcasts: Podcast[]
+  }>({
+    loading: true,
+    error: null,
+    podcasts: [],
+  })
+
   const [topUsersState, setTopUsersState] = useState<{
     loading: boolean
     error: string | null
-    topUsers: UserPodcasts[]
+    topUsers: TopUser[]
   }>({
     loading: true,
     error: null,
@@ -27,6 +39,20 @@ const RightSidebar: React.FC = () => {
   })
 
   useEffect(() => {
+    const fetchTrendingPodcasts = async () => {
+      try {
+        const result = await getTrendingPodcasts()
+        setTrendingPodcasts({ loading: false, error: null, podcasts: result })
+      } catch (error) {
+        console.error("Error fetching top users:", error)
+        setTrendingPodcasts({
+          loading: false,
+          error: "Failed to load top users.",
+          podcasts: [],
+        })
+      }
+    }
+
     const fetchTopUsers = async () => {
       try {
         const result = await getTopUsersByPodcastCount()
@@ -41,14 +67,9 @@ const RightSidebar: React.FC = () => {
       }
     }
 
+    fetchTrendingPodcasts()
     fetchTopUsers()
   }, [])
-
-  // Memoize the sorted top users to avoid unnecessary re-renders
-  const topUsers = useMemo(
-    () => topUsersState.topUsers,
-    [topUsersState.topUsers]
-  )
 
   // Memoize the onClick handler to avoid re-creation on every render
   const handleProfileClick = useCallback(
@@ -58,9 +79,11 @@ const RightSidebar: React.FC = () => {
     [router]
   )
 
-  if (topUsersState.error) {
-    return <div>Error: {topUsersState.error}</div>
+  if (trendingPodcasts.error) {
+    return <div>Error: {trendingPodcasts.error}</div>
   }
+
+  console.log(trendingPodcasts.podcasts)
 
   return (
     <section className="right_sidebar text-white-1">
@@ -80,8 +103,13 @@ const RightSidebar: React.FC = () => {
           </div>
         </Link>
       ) : (
-        <div className="flex gap-3 pb-12 w-full justify-between cursor-pointer" onClick={() => signIn('google')}>
-          <h1 className="text-16 font-semibold text-orange-1 ">Please log in</h1>
+        <div
+          className="flex gap-3 pb-12 w-full justify-between cursor-pointer"
+          onClick={() => signIn("google")}
+        >
+          <h1 className="text-16 font-semibold text-orange-1 ">
+            Please log in
+          </h1>
           <Image
             src={"/icons/right-arrow.svg"}
             alt="arrow"
@@ -92,43 +120,33 @@ const RightSidebar: React.FC = () => {
       )}
 
       <section>
-        <Header headerTitle="Fans like you" />
-        {topUsers.length > 0 ? (
-          topUsers.map((topUser) => (
-            <div key={topUser.userId} className="pt-4">
-              <Carousel fansLikeDetail={topUser.podcasts} />
-            </div>
-          ))
-        ) : (
-          <div>No top users found.</div>
-        )}
+        <Header headerTitle="Fans also like" />
+        <Carousel fansLikeDetail={trendingPodcasts.podcasts} />
       </section>
 
       <section className="flex flex-col gap-8 pt-12">
         <Header headerTitle="Top Podcasters" />
         <div className="flex flex-col gap-6">
-          {topUsers.slice(0, 4).map((item) => (
+          {topUsersState.topUsers.slice(0, 4).map((item) => (
             <div
-              key={item.userId}
+              key={item.authorId}
               className="flex cursor-pointer justify-between"
-              onClick={() => handleProfileClick(item.userId)}
+              onClick={() => handleProfileClick(item.authorId)}
             >
               <figure className="flex items-center gap-2">
                 <Image
-                  src={item.podcasts[0].authorImageUrl}
-                  alt={item.podcasts[0].author}
+                  src={item.authorImageUrl}
+                  alt={item.author}
                   height={30}
                   width={30}
                   className="aspect-square rounded-lg"
                 />
                 <h2 className="text-14 font-semibold text-white-1">
-                  {item.podcasts[0].author}
+                  {item.author}
                 </h2>
               </figure>
               <div className="flex items-center">
-                <p className="text-12 font-normal">
-                  {item.podcasts.length} Podcasts
-                </p>
+                <p className="text-12 font-normal">{item.podcastCount} Podcasts</p>
               </div>
             </div>
           ))}

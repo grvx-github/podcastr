@@ -10,7 +10,6 @@ const PodcastCard = ({
   podcastId,
 }: PodcastCardProps) => {
 
- 
 
   return (
     <Link href={`/podcasts/${podcastId}`}>
