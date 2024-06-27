@@ -45,7 +45,7 @@ export default async function PodcastDetails({ params }: PodcastDetailsProps) {
         podcastId={podcast.id}
         {...podcast}
       />
-      <p className="text-white-2 text-16 pb-8 pt-[45px] font-medium max-md:text-center">
+      <p className="text-white-2 text-16 pb-8 pt-[45px] font-medium max-md:text-left">
         {podcast.podcastDescription}
       </p>
       <div className="flex flex-col gap-8">
