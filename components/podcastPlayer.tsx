@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { useAudio } from "@/providers/audioProvider"
 
 import { Progress } from "./ui/progress"
-import { incrementListenCount } from "@/lib/podcasts"
+import { incrementListenCount } from "@/lib/actions/podcasts.actions"
 
 const PodcastPlayer = () => {
   const audioRef = useRef<HTMLAudioElement>(null)

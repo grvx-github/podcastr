@@ -1,25 +1,34 @@
-// LeftSidebar.js
 "use client"
-import React, { useEffect } from "react"
+import React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { sidebarLinks } from "@/constants"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { useSession, signOut, signIn } from "next-auth/react"
 import { Button } from "./ui/button"
+import { useFirebaseAuth } from "@/lib/useFirebaseAuth" // Import custom hook
+import { useUser } from "@/context/userContext"
 
 const LeftSidebar = () => {
-  const { data: session, status } = useSession()
-
-  // Debugging: Log session data and status
-  useEffect(() => {}, [session, status])
-
-  // Use the session and status to determine if user is logged in
-  const user = status === "authenticated" ? session?.user : null
+  const { user, googleSignIn, logOut } = useUser()
 
   const pathName = usePathname()
-  const router = useRouter()
+
+  const handleSignIn = async () => {
+    try {
+      await googleSignIn()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await logOut()
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <section className="left_sidebar h-screen">
@@ -57,7 +66,7 @@ const LeftSidebar = () => {
         <div className="flex-center w-full pb-14 max-lg:px-4 lg:pr-4">
           <Button
             className="text-16 w-full bg-orange-1 font-extrabold"
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={handleSignOut}
           >
             Log Out
           </Button>
@@ -66,7 +75,7 @@ const LeftSidebar = () => {
         <div className="flex-center w-full pb-14 max-lg:px-4 lg:pr-4">
           <Button
             className="text-16 w-full bg-orange-1 font-extrabold"
-            onClick={() => signIn("google")} // Trigger Google sign-in
+            onClick={handleSignIn} // Trigger Google sign-in
           >
             Sign in
           </Button>

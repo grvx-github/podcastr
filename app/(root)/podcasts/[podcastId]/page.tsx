@@ -1,14 +1,16 @@
 // app/podcast/[podcastId]/page.tsx
 import Image from "next/image"
 import React from "react"
-import { getPodcastById, getPodcastsByVoiceType } from "@/lib/podcasts"
+import {
+  getPodcastById,
+  getPodcastsByVoiceType,
+} from "@/lib/actions/podcasts.actions"
 import PodcastDetailPlayer from "@/components/podcastDetailPlayer"
 import LoaderSpinner from "@/components/loaderSpinner"
 import PodcastCard from "@/components/podcastCard"
 import { Podcast } from "@/types"
 import EmptyState from "@/components/emptyState"
 import { getServerSession } from "next-auth"
-import { authConfig } from "@/lib/auth"
 
 interface PodcastDetailsProps {
   params: { podcastId: string }
@@ -68,6 +70,8 @@ export default async function PodcastDetails({ params }: PodcastDetailsProps) {
                   podcastDescription,
                   imageUrl,
                   podcastTitle,
+                  author,
+                  authorImageUrl,
                 }: Podcast) => (
                   <PodcastCard
                     key={id}
@@ -75,6 +79,8 @@ export default async function PodcastDetails({ params }: PodcastDetailsProps) {
                     title={podcastTitle}
                     description={podcastDescription}
                     podcastId={id}
+                    author={author}
+                    authorImageUrl={authorImageUrl}
                   />
                 )
               )}

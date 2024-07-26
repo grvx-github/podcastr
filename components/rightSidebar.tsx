@@ -1,21 +1,20 @@
 // /components/RightSidebar.tsx
 
-import React, { useEffect, useState, useMemo, useCallback } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
-import { useSession, signIn } from "next-auth/react"
 import UserButton from "./userButton"
 import Image from "next/image"
 import Header from "./header"
 import Carousel from "./carousel"
 import { useRouter } from "next/navigation"
 import { Podcast, TopUser } from "@/types"
-import { getTrendingPodcasts } from "@/lib/podcasts"
-import { getTopUsersByPodcastCount } from "@/lib/users"
+import { getTrendingPodcasts } from "@/lib/actions/podcasts.actions"
+import { getTopUsersByPodcastCount } from "@/lib/actions/users.actions"
+import { useUser } from "@/context/userContext"
 
 const RightSidebar: React.FC = () => {
   const router = useRouter()
-  const { data: session, status } = useSession()
-  const user = session?.user
+  const { user, googleSignIn } = useUser()
 
   // Updated state to store TopUser objects
   const [trendingPodcasts, setTrendingPodcasts] = useState<{
@@ -83,16 +82,15 @@ const RightSidebar: React.FC = () => {
     return <div>Error: {trendingPodcasts.error}</div>
   }
 
-  console.log(trendingPodcasts.podcasts)
 
   return (
     <section className="right_sidebar text-white-1">
       {user ? (
         <Link href={`/profile/${user.email}`} className="flex gap-3 pb-12">
-          <UserButton imgUrl={user.image || "/path/to/default/image.png"} />
+          <UserButton imgUrl={user.photoURL || "/path/to/default/image.png"} />
           <div className="flex w-full items-center justify-between">
             <h1 className="text-16 truncate font-semibold text-white-1">
-              {user.name}
+              {user.displayName}
             </h1>
             <Image
               src={"/icons/right-arrow.svg"}
@@ -105,7 +103,7 @@ const RightSidebar: React.FC = () => {
       ) : (
         <div
           className="flex gap-3 pb-12 w-full justify-between cursor-pointer"
-          onClick={() => signIn("google")}
+          onClick={() => googleSignIn()}
         >
           <h1 className="text-16 font-semibold text-orange-1 ">
             Please log in
@@ -146,7 +144,9 @@ const RightSidebar: React.FC = () => {
                 </h2>
               </figure>
               <div className="flex items-center">
-                <p className="text-12 font-normal">{item.podcastCount} Podcasts</p>
+                <p className="text-12 font-normal">
+                  {item.podcastCount} Podcasts
+                </p>
               </div>
             </div>
           ))}

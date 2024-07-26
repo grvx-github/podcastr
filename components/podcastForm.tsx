@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Loader } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { handleGeneratePodcast } from "@/lib/podcasts"
+import { handleGeneratePodcast } from "@/lib/actions/podcasts.actions"
 import { storage, db } from "../firebaseConfig"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
@@ -39,12 +39,12 @@ const formSchema = z.object({
   voicePrompt: z.string().min(2),
 })
 
-const PodcastForm: React.FC<{ session: any }> = ({ session }) => {
+const PodcastForm: React.FC<{ user: any }> = ({ user }) => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [image, setImage] = useState<string>("") // State for the image URL
+  const [image, setImage] = useState<string>("")
 
   const { toast } = useToast()
 
@@ -62,7 +62,6 @@ const PodcastForm: React.FC<{ session: any }> = ({ session }) => {
     const values = form.getValues()
     setIsGenerating(true)
 
-    // Clean the voicePrompt before generating the podcast
     const cleanedVoicePrompt = cleanVoicePrompt(values.voicePrompt)
 
     const { audioBlob, audioUrl, error } = await handleGeneratePodcast(
@@ -91,41 +90,40 @@ const PodcastForm: React.FC<{ session: any }> = ({ session }) => {
       })
       setIsSaving(false)
       return
-    } else if (!session?.user?.email) {
+    } else if (!user?.email) {
       toast({ title: "User not authenticated.", variant: "destructive" })
       return
     }
 
     try {
       const fileName = `${uuidv4()}.mp3`
-      const audioRef = ref(
-        storage,
-        `podcasts/${session.user.email}/${fileName}`
-      )
+      const audioRef = ref(storage, `podcasts/${user.email}/${fileName}`)
       await uploadBytes(audioRef, audioBlob)
       const downloadUrl = await getDownloadURL(audioRef)
 
       const values = form.getValues()
+      const currentTimestamp = new Date().toISOString()
 
       const podcastData = {
-        user: session.user.email,
+        user: user.email,
         podcastTitle: values.podcastTitle,
         podcastDescription: values.podcastDescriptions,
         audioUrl: downloadUrl,
         audioStorageId: audioRef.fullPath,
-        author: session.user?.name || "Unknown",
-        authorId: session.user.email,
-        authorImageUrl: session.user?.image || "",
+        author: user?.name || "Unknown",
+        authorId: user.email,
+        authorImageUrl: user?.image || "",
         voicePrompt: values.voicePrompt,
         voiceType: values.voiceType,
-        imageUrl: image, // Include image URL in the data
-        audioDuration: 0, // Placeholder, adjust if you have duration data
-        views: 0, // Initial views count
+        imageUrl: image,
+        audioDuration: 0,
+        views: 0,
+        createdAt: currentTimestamp,
       }
 
       await addDoc(collection(db, "podcasts"), podcastData)
       setAudioUrl(null)
-      setImage("") // Reset the image state
+      setImage("")
       toast({
         title: "Podcast saved!",
       })
@@ -271,12 +269,12 @@ const PodcastForm: React.FC<{ session: any }> = ({ session }) => {
         )}
 
         <GenerateThumbnail image={image} setImage={setImage} />
-        <button
+        <Button
           onClick={savePodcast}
-          className="text-16 mt-4 bg-red-500 hover:bg-red-400 py-2 px-4 font-bold text-white-1"
+          className="text-16 mt-4 bg-orange-1 hover:bg-black-1 py-2 px-4 font-bold text-white-1"
         >
           {isSaving ? " Saving..." : "Save Podcast"}
-        </button>
+        </Button>
       </form>
     </Form>
   )

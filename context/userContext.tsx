@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 // app/context/UserContext.tsx
 import {
@@ -8,32 +8,45 @@ import {
   useState,
   ReactNode,
 } from "react"
-import { getServerSession } from "next-auth"
-import { authConfig } from "@/lib/auth"
-import { Session } from "next-auth"
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+} from "firebase/auth"
+
+import { auth } from "@/firebaseConfig"
+import { User as FirebaseUser } from "firebase/auth"
 
 interface UserContextProps {
-  user: Session["user"] | null
-  loading: boolean
+  user: FirebaseUser | null
+  googleSignIn: () => void
+  logOut: () => void
 }
 
 const UserContext = createContext<UserContextProps | undefined>(undefined)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<Session["user"] | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<FirebaseUser | null>(null)
+
+  const googleSignIn = () => {
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider)
+  }
+
+  const logOut = () => {
+    signOut(auth)
+  }
 
   useEffect(() => {
-    // Fetch the session and set the user data
-    ;(async () => {
-      const session = await getServerSession(authConfig)
-      setUser(session?.user || null)
-      setLoading(false)
-    })()
-  }, [])
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+    })
+    return () => unsubscribe()
+  }, [user])
 
   return (
-    <UserContext.Provider value={{ user, loading }}>
+    <UserContext.Provider value={{ user, googleSignIn, logOut }}>
       {children}
     </UserContext.Provider>
   )

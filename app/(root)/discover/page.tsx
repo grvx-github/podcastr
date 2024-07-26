@@ -6,7 +6,7 @@ import React, { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import EmptyState from "@/components/emptyState"
 import LoaderSpinner from "@/components/loaderSpinner"
-import { searchPodcasts } from "@/lib/podcasts"
+import { searchPodcasts } from "@/lib/actions/podcasts.actions"
 import PodcastCard from "@/components/podcastCard"
 import Searchbar from "@/components/searchbar"
 import { Podcast } from "@/types"
@@ -57,6 +57,8 @@ const DiscoverComp: React.FC = () => {
                   title={podcast.podcastTitle}
                   description={podcast.podcastDescription}
                   podcastId={podcast.id}
+                  author={podcast.author}
+                  authorImageUrl={podcast.authorImageUrl}
                 />
               ))}
             </div>

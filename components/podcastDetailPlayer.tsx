@@ -7,7 +7,7 @@ import { PodcastDetailPlayerProps } from "@/types"
 import LoaderSpinner from "./loaderSpinner"
 import { Button } from "./ui/button"
 import { useToast } from "./ui/use-toast"
-import { deletePodcast } from "@/lib/podcasts"
+import { deletePodcast } from "@/lib/actions/podcasts.actions"
 import { useAudio } from "@/providers/audioProvider"
 
 const PodcastDetailPlayer = ({

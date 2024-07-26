@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { StaticImport } from "next/dist/shared/lib/get-img-props"
+import { Timestamp } from "firebase/firestore"
 import { Dispatch, SetStateAction } from "react"
 
 // Define the EmptyStateProps interface for components that show an empty state
@@ -60,6 +60,7 @@ export interface PodcastProps {
   voiceType: string
   audioDuration: number
   views: number
+  createdAt: Timestamp
 }
 
 export interface Podcast extends PodcastProps {
@@ -141,6 +142,10 @@ export interface PodcastCardProps {
   title: string
   description: string
   podcastId: string // Podcast document ID
+  author: string
+  authorImageUrl?: string
+  createdAt?: Timestamp
+  views?:number
 }
 
 // Define the CarouselProps interface for the carousel component

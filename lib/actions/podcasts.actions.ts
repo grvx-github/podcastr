@@ -1,5 +1,6 @@
 // lib/podcast.ts
 
+
 import {
   collection,
   getDocs,
@@ -13,7 +14,7 @@ import {
   updateDoc,
   increment,
 } from "firebase/firestore"
-import { db, storage } from "../firebaseConfig"
+import { db, storage } from "../../firebaseConfig"
 import { deleteObject, ref } from "firebase/storage"
 
 import { Podcast } from "@/types"
