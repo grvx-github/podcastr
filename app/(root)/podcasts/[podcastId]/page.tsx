@@ -1,6 +1,7 @@
 // app/podcast/[podcastId]/page.tsx
+"use client"
 import Image from "next/image"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
   getPodcastById,
   getPodcastsByVoiceType,
@@ -10,22 +11,34 @@ import LoaderSpinner from "@/components/loaderSpinner"
 import PodcastCard from "@/components/podcastCard"
 import { Podcast } from "@/types"
 import EmptyState from "@/components/emptyState"
-import { getServerSession } from "next-auth"
 import { useUser } from "@/context/userContext"
 
 interface PodcastDetailsProps {
   params: { podcastId: string }
 }
 
-export default async function PodcastDetails({ params }: PodcastDetailsProps) {
+const PodcastDetails: React.FC<{ params: { podcastId: string } }> = ({
+  params,
+}) => {
   const { user } = useUser()
-
-
-  const podcastId = params.podcastId
-  const podcast = await getPodcastById(podcastId)
+  const [podcast, setPodcast] = useState<Podcast | null>(null)
+  const [similarPodcasts, setSimilarPodcasts] = useState<Podcast[]>([])
+  const [loading, setLoading] = useState(true)
   const isOwner = user?.email === podcast?.authorId
 
-  const similarPodcasts = await getPodcastsByVoiceType(podcastId)
+  useEffect(() => {
+    const fetchData = async () => {
+      const podcastData = await getPodcastById(params.podcastId)
+      setPodcast(podcastData)
+      const similarPodcastsData = await getPodcastsByVoiceType(params.podcastId)
+      setSimilarPodcasts(similarPodcastsData)
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [params.podcastId])
+
+  if (loading) return <LoaderSpinner />
 
   if (!similarPodcasts || !podcast) return <LoaderSpinner />
 
@@ -97,3 +110,4 @@ export default async function PodcastDetails({ params }: PodcastDetailsProps) {
     </section>
   )
 }
+export default PodcastDetails
