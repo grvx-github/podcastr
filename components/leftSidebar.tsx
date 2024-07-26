@@ -1,3 +1,4 @@
+// LeftSidebar.jsx
 "use client"
 import React from "react"
 import Image from "next/image"
@@ -29,6 +30,8 @@ const LeftSidebar = () => {
     }
   }
 
+  console.log("User:", user) // Debug log
+
   return (
     <section className="left_sidebar h-screen">
       <nav className="flex flex-col gap-6">
@@ -56,13 +59,13 @@ const LeftSidebar = () => {
               )}
             >
               <Image src={imgURL} alt={label} height={24} width={24} />
-              <p>{label} </p>
+              <p>{label}</p>
             </Link>
           )
         })}
       </nav>
       {user ? (
-        <div className="flex-center w-full pb-14 max-lg:px-4 lg:pr-4">
+        <div className="flex justify-center w-full pb-14 max-lg:px-4 lg:pr-4">
           <Button
             className="text-16 w-full bg-orange-1 font-extrabold"
             onClick={handleSignOut}
@@ -71,10 +74,10 @@ const LeftSidebar = () => {
           </Button>
         </div>
       ) : (
-        <div className="flex-center w-full pb-14 max-lg:px-4 lg:pr-4">
+        <div className="flex justify-center w-full pb-14 max-lg:px-4 lg:pr-4">
           <Button
             className="text-16 w-full bg-orange-1 font-extrabold"
-            onClick={handleSignIn} // Trigger Google sign-in
+            onClick={handleSignIn}
           >
             Sign in
           </Button>
