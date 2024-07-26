@@ -97,14 +97,14 @@ const MobileNav = () => {
           <div className="flex flex-col gap-4 p-4">
             {user ? (
               <Button
-                className="text-16 w-full bg-orange-1 font-extrabold"
+                className="text-16 w-full bg-orange-1 text-white font-extrabold"
                 onClick={handleSignOut}
               >
                 Log Out
               </Button>
             ) : (
               <Button
-                className="text-16 w-full bg-orange-1 font-extrabold"
+                className="text-16 w-full bg-orange-1 text-white font-extrabold"
                 onClick={handleSignIn}
               >
                 Sign In
