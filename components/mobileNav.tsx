@@ -4,9 +4,6 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { sidebarLinks } from "@/constants"
@@ -14,9 +11,29 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useUser } from "@/context/userContext"
+import { Button } from "./ui/button"
 
 const MobileNav = () => {
   const pathName = usePathname()
+  const { user, googleSignIn, logOut } = useUser()
+
+  const handleSignIn = async () => {
+    try {
+      await googleSignIn()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await logOut()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Sheet>
       <SheetTrigger>
@@ -69,7 +86,7 @@ const MobileNav = () => {
                           height={24}
                           width={24}
                         />
-                        <p>{label} </p>
+                        <p>{label}</p>
                       </Link>
                     </SheetClose>
                   )
@@ -77,6 +94,23 @@ const MobileNav = () => {
               )}
             </nav>
           </SheetClose>
+          <div className="flex flex-col gap-4 p-4">
+            {user ? (
+              <Button
+                className="text-16 w-full bg-orange-1 font-extrabold"
+                onClick={handleSignOut}
+              >
+                Log Out
+              </Button>
+            ) : (
+              <Button
+                className="text-16 w-full bg-orange-1 font-extrabold"
+                onClick={handleSignIn}
+              >
+                Sign In
+              </Button>
+            )}
+          </div>
         </div>
       </SheetContent>
     </Sheet>

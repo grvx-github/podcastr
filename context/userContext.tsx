@@ -40,11 +40,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("Auth State Changed:", currentUser) // Debug log
       setUser(currentUser)
     })
     return () => unsubscribe()
-  }, [user])
-
+  }, [])
+  
   return (
     <UserContext.Provider value={{ user, googleSignIn, logOut }}>
       {children}
