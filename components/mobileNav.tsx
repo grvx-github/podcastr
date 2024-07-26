@@ -35,7 +35,7 @@ const MobileNav = () => {
   }
 
   return (
-    <Sheet>
+    <Sheet >
       <SheetTrigger>
         <Image
           src={"/icons/hamburger.svg"}
@@ -45,7 +45,7 @@ const MobileNav = () => {
           className="cusror-pointer"
         />
       </SheetTrigger>
-      <SheetContent className="border-none bg-black-1" side="left">
+      <SheetContent className="border-none bg-black-1 max-h-screen" side="left">
         <Link
           href=""
           className="flex cursor-pointer items-center gap-1 pb-10 pl-4"
