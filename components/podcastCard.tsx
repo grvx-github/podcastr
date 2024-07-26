@@ -41,7 +41,7 @@ const PodcastCard = ({
           <h2 className="line-clamp-2 text-12 font-normal text-white-4">
             {createdAt && (
               <span className="text-white-2 mr-2">
-                {createdAt?.toDate.toLocaleString()}
+                {/* {createdAt} */}
               </span>
             )}
 

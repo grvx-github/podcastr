@@ -142,7 +142,7 @@ export interface PodcastCardProps {
   title: string
   description: string
   podcastId: string // Podcast document ID
-  author: string
+  author?: string
   authorImageUrl?: string
   createdAt?: Timestamp
   views?:number

@@ -11,14 +11,15 @@ import PodcastCard from "@/components/podcastCard"
 import { Podcast } from "@/types"
 import EmptyState from "@/components/emptyState"
 import { getServerSession } from "next-auth"
+import { useUser } from "@/context/userContext"
 
 interface PodcastDetailsProps {
   params: { podcastId: string }
 }
 
 export default async function PodcastDetails({ params }: PodcastDetailsProps) {
-  const session = await getServerSession(authConfig)
-  const user = session?.user
+  const { user } = useUser()
+
 
   const podcastId = params.podcastId
   const podcast = await getPodcastById(podcastId)

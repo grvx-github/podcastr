@@ -5,7 +5,7 @@ import EmptyState from "@/components/emptyState"
 import LoaderSpinner from "@/components/loaderSpinner"
 import PodcastCard from "@/components/podcastCard"
 import ProfileCard from "@/components/profileCard"
-import { getPodcastByAuthorId } from "@/lib/podcasts"
+import { getPodcastByAuthorId } from "@/lib/actions/podcasts.actions"
 import { PodcastsData } from "@/types"
 
 interface ProfilePageProps {
