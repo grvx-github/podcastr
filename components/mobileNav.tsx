@@ -97,7 +97,7 @@ const MobileNav = () => {
           <div className="flex flex-col gap-4 p-4">
             {user ? (
               <Button
-                className="text-16 w-full bg-orange-1 text-white-1 mb-8 font-extrabold"
+                className="text-16 w-full bg-orange-1 text-white-1 mb-20 font-extrabold"
                 onClick={handleSignOut}
               >
                 Log Out
