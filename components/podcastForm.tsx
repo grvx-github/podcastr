@@ -1,6 +1,6 @@
 // components/PodcastForm.tsx
-"use client"
-import React, { useState } from "react"
+
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -24,13 +24,14 @@ import { z } from "zod"
 import { Loader } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { handleGeneratePodcast } from "@/lib/actions/podcasts.actions"
-import { storage, db } from "../firebaseConfig"
+import { storage, db, auth } from "../firebaseConfig"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { v4 as uuidv4 } from "uuid"
 import { collection, addDoc } from "firebase/firestore"
 import { useToast } from "@/components/ui/use-toast"
 import GenerateThumbnail from "./generte-thumbnail"
 import cleanVoicePrompt from "@/lib/cleanVoicePrompt"
+import { onAuthStateChanged } from "firebase/auth"
 
 const formSchema = z.object({
   podcastTitle: z.string().min(2),
@@ -45,8 +46,20 @@ const PodcastForm: React.FC<{ user: any }> = ({ user }) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [image, setImage] = useState<string>("")
+  const [authUser, setAuthUser] = useState<any>(null)
 
   const { toast } = useToast()
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuthUser(user)
+      } else {
+        setAuthUser(null)
+      }
+    })
+    return () => unsubscribe()
+  }, [])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -90,14 +103,14 @@ const PodcastForm: React.FC<{ user: any }> = ({ user }) => {
       })
       setIsSaving(false)
       return
-    } else if (!user?.email) {
+    } else if (!authUser?.email) {
       toast({ title: "User not authenticated.", variant: "destructive" })
       return
     }
 
     try {
       const fileName = `${uuidv4()}.mp3`
-      const audioRef = ref(storage, `podcasts/${user.email}/${fileName}`)
+      const audioRef = ref(storage, `podcasts/${authUser.email}/${fileName}`)
       await uploadBytes(audioRef, audioBlob)
       const downloadUrl = await getDownloadURL(audioRef)
 
@@ -105,14 +118,14 @@ const PodcastForm: React.FC<{ user: any }> = ({ user }) => {
       const currentTimestamp = new Date().toISOString()
 
       const podcastData = {
-        user: user.email,
+        user: authUser.email,
         podcastTitle: values.podcastTitle,
         podcastDescription: values.podcastDescriptions,
         audioUrl: downloadUrl,
         audioStorageId: audioRef.fullPath,
-        author: user?.name || "Unknown",
-        authorId: user.email,
-        authorImageUrl: user?.image || "",
+        author: authUser?.displayName || "Unknown",
+        authorId: authUser.email,
+        authorImageUrl: authUser?.photoURL || "",
         voicePrompt: values.voicePrompt,
         voiceType: values.voiceType,
         imageUrl: image,
@@ -130,7 +143,11 @@ const PodcastForm: React.FC<{ user: any }> = ({ user }) => {
       setIsSaving(false)
     } catch (error) {
       console.error("Error saving podcast:", error)
-      alert("Failed to save podcast. Please try again.")
+      toast({
+        title: "Failed to save podcast.",
+        description: (error as Error).message,
+        variant: "destructive",
+      })
       setIsSaving(false)
     }
   }
