@@ -59,6 +59,8 @@ const DiscoverComp: React.FC = () => {
                   podcastId={podcast.id}
                   author={podcast.author}
                   authorImageUrl={podcast.authorImageUrl}
+                  views={podcast.views}
+                  createdAt={podcast.createdAt}
                 />
               ))}
             </div>
