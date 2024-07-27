@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import React from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { timeAgo } from "@/lib/timeAgo"
 
 const PodcastCard = ({
   imgUrl,
@@ -14,16 +15,17 @@ const PodcastCard = ({
   views,
   createdAt,
 }: PodcastCardProps) => {
+   const formattedDate = createdAt ? timeAgo(createdAt) : ""
   return (
     <Link href={`/podcasts/${podcastId}`}>
-      <figure className="flex flex-col gap-1 bg-black-5 rounded-lg">
-        <div className="px-4 pt-2 flex justify-start items-center overflow-hidden gap-3">
+      <figure className="flex flex-col gap-1 bg-black-2 rounded-lg">
+        <div className="px-4 pt-1 flex justify-start items-center overflow-hidden gap-3">
           <Avatar className="w-10 rounded-full h-full md:h-10">
             <AvatarImage src={authorImageUrl} alt="User image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="flex flex-col justify-center items-start gap-1 h-16">
-            <h1 className="text-lg leading-5 font-bold text-white-1 line-clamp-2">
+            <h1 className="text-base leading-5 font-bold text-white-1 line-clamp-2">
               {title}
             </h1>
 
@@ -35,14 +37,12 @@ const PodcastCard = ({
           width={200}
           height={200}
           alt="title"
-          className="aspect-square h-fit w-full 2xl:size-[200px] object-cover"
+          className="aspect-square h-48 w-full 2xl:size-[200px] object-cover"
         />
-        <div className="px-4 pb-2 text-wrap h-12 leading-none overflow-hidden">
+        <div className="px-4 py-1 text-wrap h-12 leading-none overflow-hidden">
           <h2 className="line-clamp-2 text-12 font-normal text-white-4">
             {createdAt && (
-              <span className="text-white-2 mr-2">
-                {/* {createdAt} */}
-              </span>
+              <span className="text-white-2 mr-2 font-semibold">{formattedDate}</span>
             )}
 
             <span className="text-12 text-white-2 font-semibold mr-2">

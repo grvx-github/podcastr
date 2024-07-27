@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 
-import { Timestamp } from "firebase/firestore"
 import { Dispatch, SetStateAction } from "react"
 
 // Define the EmptyStateProps interface for components that show an empty state
@@ -60,7 +59,7 @@ export interface PodcastProps {
   voiceType: string
   audioDuration: number
   views: number
-  createdAt: Timestamp
+  createdAt: string
 }
 
 export interface Podcast extends PodcastProps {
@@ -144,7 +143,7 @@ export interface PodcastCardProps {
   podcastId: string // Podcast document ID
   author?: string
   authorImageUrl?: string
-  createdAt?: Timestamp
+  createdAt?: string
   views?:number
 }
 
